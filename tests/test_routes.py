@@ -133,7 +133,7 @@ class TestAccountService(TestCase):
         data = resp.get_json()
         self.assertEqual(data["name"], account.name)
 
-    def test_account_not_found(self):
+    def test_read_account_not_found(self):
         """If no account to read, should return HTTP 404 NOT FOUND"""
         resp = self.client.get(f"{BASE_URL}/0")
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
@@ -146,3 +146,27 @@ class TestAccountService(TestCase):
         data = resp.get_json()
         self.assertEqual(len(data), 5)
         
+    def test_update_account(self):
+        """It should update an existing account"""
+        account = self._create_accounts(1)[0]
+        resp = self.client.get(
+            f"{BASE_URL}/{account.id}", content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        new_account = resp.get_json()
+        new_account["name"] = "Test Name"
+
+        resp = self.client.put(
+            f"{BASE_URL}/{new_account['id']}", 
+            json=new_account, 
+            content_type="application/json"
+        )
+
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        updated_account = resp.get_json()
+        self.assertEqual(updated_account["name"], "Test Name")
+    
+    def test_update_account_not_found(self):
+        """If no account to update, should return HTTP 404 NOT FOUND"""
+        resp = self.client.put(f"{BASE_URL}/0")
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
