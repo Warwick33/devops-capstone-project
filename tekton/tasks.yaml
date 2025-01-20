@@ -62,7 +62,7 @@ spec:
     - name: args
       description: The arguments for nosetests
       type: string
-      default: -v
+      default: "-v"
     - name: database_uri
       description: Test database url
       type: string
